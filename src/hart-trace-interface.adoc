@@ -54,11 +54,11 @@ This specification is licensed under the Creative Commons
 Attribution 4.0 International License (CC-BY 4.0). The full
 license text is available at https://creativecommons.org/licenses/by/4.0/.
 
+Copyright 2026 by RISC-V International.
+
 This document is a derivative of https://github.com/riscv-non-isa/riscv-trace-spec/releases/latest/[Efficient Trace for RISC-V Specification], June 16, 2025, edited by Gajinder Panesar and Iain Robertson,  released under the Creative Commons Attribution 4.0 International License ©2025.
 
 Chapter 3 includes extensions to this.
-
-Copyright 2026 by RISC-V International.
 
 [colophon]
 
