@@ -4,3 +4,9 @@ This RISC-V specification has been contributed to directly or indirectly by:
 
 [%hardbreaks]
 * Iain Robertson <iain.robertson@siemens.com> - author
+* Jack Yeh (Taiwan University) - reviews
+* Robert Chyla (MIPS) - reviews
+* Ved Shanbhogue (Meta) - reviews
+* Beeman Strong (Meta) - reviews
+* Michael Schleinkofer (Lauterbach) - reviews
+* Bruce Ableidinger (MIPS) - reviews

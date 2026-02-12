@@ -52,18 +52,15 @@ may not conform to the future standard.
 == Copyright and license information
 This specification is licensed under the Creative Commons
 Attribution 4.0 International License (CC-BY 4.0). The full
-license text is available at
-https://creativecommons.org/licenses/by/4.0/.
+license text is available at https://creativecommons.org/licenses/by/4.0/.
 
 Copyright 2026 by RISC-V International.
 
-[colophon]
-
-*_Preface to Version TBD_*
-
-Chapter 2 of this document is based on Chapter 4 of *Version 20250616* of the https://github.com/riscv-non-isa/riscv-trace-spec/releases/latest/[Efficient Trace for RISC-V Specification], which is the ratified 2.0 specification with some informative clarifications and corrections.
+This document is a derivative of https://github.com/riscv-non-isa/riscv-trace-spec/releases/latest/[Efficient Trace for RISC-V Specification], June 16, 2025, edited by Gajinder Panesar and Iain Robertson,  released under the Creative Commons Attribution 4.0 International License ©2025.
 
 Chapter 3 includes extensions to this.
+
+[colophon]
 
 [preface]
 include::contributors.adoc[]
