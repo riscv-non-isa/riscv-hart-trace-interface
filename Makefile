@@ -17,7 +17,7 @@ DOCS := \
 
 
 DATE ?= $(shell date +%Y-%m-%d)
-VERSION ?= v0.9.0
+VERSION ?= v0.8.3
 REVMARK ?= Frozen
 DOCKER_IMG := ghcr.io/riscv/riscv-docs-base-container-image:latest
 ifneq ($(SKIP_DOCKER),true)
