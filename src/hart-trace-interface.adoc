@@ -5,7 +5,7 @@ include::../docs-resources/global-config.adoc[]
 :description: RISC-V Hart to Trace Interface Specification
 :revdate: 4/28/2026
 :revnumber: 0.9
-:revremark: This document is under development. Expect potential changes. Visit http://riscv.org/spec-state for further details.
+:revremark: This document is in the Freeze state. Changes are unlikely at this point of the specification.
 :revinfo:
 :preface-title: Preamble
 :colophon:
