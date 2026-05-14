@@ -6,7 +6,7 @@ This chapter specifies the following standard extensions to the base Hart to Tra
 [%autowidth,float="center",align="center",cols="^,^,^",options="header",]
 |===
 |       Specification                                        |Version |Status
-| <<sec:trcstate, *Trace State*>>|*0.8* |*Fast-track*
+| <<sec:trcstate, *Trace State*>>|*0.9* |*Fast-track*
 
 
 |===
