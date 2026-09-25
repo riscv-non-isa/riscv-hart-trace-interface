@@ -17,8 +17,8 @@ DOCS := \
 
 
 DATE ?= $(shell date +%Y-%m-%d)
-VERSION ?= v0.9.1
-REVMARK ?= Frozen
+VERSION ?= v1.0
+REVMARK ?= Ratified
 DOCKER_IMG := ghcr.io/riscv/riscv-docs-base-container-image:latest
 ifneq ($(SKIP_DOCKER),true)
 	DOCKER_IS_PODMAN = \
