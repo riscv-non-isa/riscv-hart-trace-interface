@@ -1,0 +1,6 @@
+* xref:index.adoc[HART Trace Interface]
+** xref:contributors.adoc[Contributors]
+** xref:intro.adoc[Introduction]
+** xref:hti.adoc[HART Trace Interface Specification]
+** xref:extensions.adoc[Extensions]
+** xref:bibliography.adoc[Bibliography]

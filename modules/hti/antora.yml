@@ -1,0 +1,17 @@
+name: hti
+title: HART Trace Interface
+version: v1.0
+display-version: '1.0'
+start_page: ROOT:index.adoc
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    page-group: debug-trace-ras
+    asamBibliography: 'ROOT:resources/hti.bib'
+    page-card-description: 'RISC-V Hart Trace Interface specification for instruction trace encoder communication.'
+    page-release-date: 'September 2026'
+    page-pdf_url: _attachments/riscv-hart-trace-interface.pdf
+    more_details_url: https://riscv.atlassian.net/wiki/external/RVS-3561
+    source-highlighter: highlight.js
