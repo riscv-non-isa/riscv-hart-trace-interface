@@ -43,7 +43,7 @@ be controlled via the optional filtering capabilities.
 [[sec:sdsec]]
 ==== External Debug Security (sdsec)
 
-The External Debug Security specification introduces the concept of the logical 'sec_inhibit' signal, which when active requires trace to be inhibited.  This can be achieved by setting *trcstate* to 01 when 'sec_inhibit' is true.
+The External Debug Security specification introduces the concept of the logical 'sec_inhibit' signal, which when active requires trace to be inhibited.  This can be achieved by setting *trcstate* to 10 when 'sec_inhibit' is true.
 
 [[sec:wfi]]
 ==== Unbounded Wait

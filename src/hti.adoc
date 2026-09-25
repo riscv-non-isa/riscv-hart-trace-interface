@@ -306,7 +306,7 @@ NOTE: Branches (*itype*=4, 5) are always conditional, direct branches. In RISC-V
 NOTE: Symbol `link` means register *x1* or *x5* as specified in *The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA* document.
 
 [[zcmp]]
-NOTE: Jump instructions (CM.JT and CM.JALT) defined by ratified *Zcmp* extension are handled as direct (inferable) jumps as jump tables are assumed to be static and known to the decoder.
+NOTE: Jump instructions (CM.JT and CM.JALT) defined by ratified *Zcmp* extension are handled as direct (inferable) jumps as jump tables are assumed to be static and known to the trace decoder.
 
 <<<
 
@@ -370,20 +370,20 @@ instructions up to the 2nd branch must be reported in group 1 and so on.
 the logic to detect sequentially inferable jumps. If the encoder offers
 an *sijump* input it must also provide a parameter to indicate whether
 the input is connected to a hart that implements this capability, or
-tied off. This is to ensure the decoder can be made aware of the hart’s
+tied off. This is to ensure the trace decoder can be made aware of the hart’s
 capability. Enabling sequentially inferable jump mode in the encoder and
-decoder when the hart does not support it will prevent correct
-reconstruction by the decoder.
+trace decoder when the hart does not support it will prevent correct
+reconstruction by the trace decoder.
 
 The *context* and/or the *time* field can be used to convey any
-additional information to the decoder. For example:
+additional information to the trace decoder. For example:
 
 * The address space and virtual machine IDs (*ASID* and *VMID*
 respectively). Where present it is recommended these values be wired to
 bits [15:0] and [29:16];
 * The software thread ID;
 * The process ID from an operating system;
-* It could be used to convey the values of CSRs to the decoder by
+* It could be used to convey the values of CSRs to the trace decoder by
 setting *context* to the CSR number and value when a CSR is written;
 * In cases where a single encoder is being shared amongst multiple harts
 (see <<sec:relationship>>), it could also be used to
@@ -477,7 +477,7 @@ encoder to start tracing, and continue until further notice, subject to
 other filtering criteria also being met. A pulse on bit 1 will cause the
 encoder to stop tracing until further notice. See <<sec:trigger>>).
 |*halted* | O | Hart is halted. Upon assertion, the encoder will output a
-packet containing the information the decoder requires in order to determine the final instruction retired before halting (e.g. the address of that instruction, or the instruction count since the last reported instruction), then indicate that tracing has stopped. Upon deassertion, the encoder will start tracing again,
+packet containing the information the trace decoder requires in order to determine the final instruction retired before halting (e.g. the address of that instruction, or the instruction count since the last reported instruction), then indicate that tracing has stopped. Upon deassertion, the encoder will start tracing again,
 commencing with a synchronization packet. *Note:* If this signal is not
 provided, it is strongly recommended that Debug mode can be signalled
 via the *priv* signal. This will allow tracing in Debug mode to
@@ -538,6 +538,18 @@ It follows from this that:
 Trace-notify provides means to ensure that a specified instruction is
 explicitly reported (subject to any optional filtering). This capability
 is sometimes known as a watchpoint.
+
+[[sec:mmatrigger]]
+===== Considerations for triggering from multi-memory access instructions
+
+Debug module triggers may activate from one or more of the loads or stores initiated by an MMA instruction.  Furthermore, MMA instructions may be interrupted or faulted before completion, and after returning from the trap may resume where they left off, or re-execute in their entirety. However, the *trigger* signals are only considered when an instruction retires.
+
+* For an MMA instruction that executes to retirement without interuption, the hart must ensure all triggers initiated during the MMA instruction are output on the trigger signals when the instruction retires
+* For an MMA instruction that traps part way through, and which will re-execute from the beginning on returning from the trap, any triggers occuring before the trap must be discarded (they will re-occur when the instruction re-executes).  This applies to all Zcmp instructions.
+* For an MMA instruction that traps part way through, and which is likely to resume from where it left off on returning from the trap, any triggers occuring before the trap must be output along with the trap, as there is no mechanism for the hart to store this trigger state.
+
+There are also considerations for the trace encoder when starting trace via a _trace-on_ trigger on an MMA instruction  - see <<sec:MMAInst>>.
+
 
 ==== Example retirement sequences
 
@@ -680,7 +692,7 @@ stores are supported, _dtype_width_p_ can be 1. If Multi-memory access instructi
 
 Atomic and CSR accesses have load data and an operand (the actual stored data is obtained by applying the operator indicated by *dtype* to these values). When using unified signalling, both values are reported via *data*, with the operand data in the LSBs (occupying bits 0 through _data_width_p_/2 - 1) and the load data in the MSBs (occupying bits _data_width_p_/2 through _data_width_p_ - 1).  When using split signalling, the operand is reported via *sdata* and the load data via *ldata*.
 
-Store conditional (SC) and Compare-and-swap (CAS) instructions both perform stores only if some condition is met.  When a store is not performed, the decoder needs to be made aware in order to be able to correctly associate store packets in the data trace stream with the correct instruction.
+Store conditional (SC) and Compare-and-swap (CAS) instructions both perform stores only if some condition is met.  When a store is not performed, the trace decoder needs to be made aware in order to be able to correctly associate store packets in the data trace stream with the correct instruction.
 
 * SC and CAS instructions where the condition is met and the store occurs are reported using *dtype* codes 1 and 8 respectively;
 * SC and CAS instructions where the condition is not met and no store occurs are reported using *dtype* codes 15 and 7 respectively.
@@ -705,7 +717,7 @@ requirement is to collect data trace for the 1st load (instruction 1),
 and filtering is configured to match the address of this instruction
 only. However, information about instruction addresses is passed to the
 encoder at the block level, and the block boundaries are invisible to
-the decoder. For instruction trace, all instructions in a block are
+the trace decoder. For instruction trace, all instructions in a block are
 traced if any of the instructions in that block match the filtering
 criteria. That is fine for instruction trace - the address of the 1st
 and final traced instruction are output explicitly. There will be some
@@ -727,7 +739,7 @@ access is. In both cases, the first block matches the filtering criteria
 (it contains the address of instruction 1), and the second block does
 not. But if the encoder traced all the data accesses in the matching
 block, then in case 1 it would trace both instructions 1 and 3, whereas
-in the second case it would trace only instruction 1. The decoder has no
+in the second case it would trace only instruction 1. The trace decoder has no
 visibility of the block boundaries so cannot account for this. It is
 expecting only instruction 1 to be traced, and so may misinterpret
 instruction 3. If this code is in a loop for example, it will assume
@@ -735,7 +747,7 @@ that the 2nd traced load is in fact instruction 1 from the next loop
 iteration, rather than instruction 3 from this iteration.
 
 Providing the LSBs of the data access instruction address allows the
-decoder to determine precisely whether the data access should be traced
+trace decoder to determine precisely whether the data access should be traced
 or not, and removes the dependency on the block sizes and boundaries.
 The number of bits required is one more bit than the number required to
 index within the block because blocks can start on any half-word
@@ -755,9 +767,9 @@ on.
 ====
 This section introduces a normative change from the behavior described in the E-trace spec.  This is necessary because the original behavior would result in incorrect N-Trace instruction trace.  It could also result in misleading E-Trace instruction trace when one of these instructions traps part way through.
 
-The previous requirement to report multi-access instructions as retired multiple times (once for each load or store) is withdrawn.  They should be reported as retired only once in the same way as any other instruction.
+The previous requirement to report multi-access instructions as retired multiple times (once for each load or store) is withdrawn and deprecated for new designs.  They should be reported as retired only once in the same way as any other instruction.
 ====
-The Zcmp and Vector extensions include instructions that result in multiple loads or stores, and other future extensions may add other instructions with similar characteristics.  It is not practical for the hart to provide information about all the loads or stores initiated by such an instruction simultenously when the instruction retires; it must be provided for each load or store in turn as it completes.  This means that load/store information for these instructions is provided to the decoder before the instruction itself retires.  This in turn means that *dretire* will be active when *iretire* is not, and this requires that the signals from the <<sec:InstructionTraceInterface>> that provide details about the instruction that are normally defined to be valid when *iretire* is non-zero must also be valid when *dretire* is 1.  The final load/store initiated by the instruction must be reported no later than when the instruction is reported as retired.
+The Zcmp and Vector extensions include instructions that result in multiple loads or stores, and other future extensions may add other instructions with similar characteristics.  It is not practical for the hart to provide information about all the loads or stores initiated by such an instruction simultenously when the instruction retires; it must be provided for each load or store in turn as it completes.  This means that load/store information for these instructions is provided to the trace decoder before the instruction itself retires.  This in turn means that *dretire* will be active when *iretire* is not, and this requires that the signals from the <<sec:InstructionTraceInterface>> that provide details about the instruction that are normally defined to be valid when *iretire* is non-zero must also be valid when *dretire* is 1.  The final load/store initiated by the instruction must be reported no later than when the instruction is reported as retired.
 
 These multi-memory-access instructions may be interrupted part-way through their access sequence, or a trap may occur on one of the accesses.  This can lead to difficulties correlating the data and instruction trace streams.  Consider the following situation:
 
@@ -769,6 +781,8 @@ These multi-memory-access instructions may be interrupted part-way through their
 
 The program flow decoded from the instruction trace stream will show that a trap occurred following instruction "X", with the vector store following the trap handler return.  On the other hand, the data trace stream will have the 2 vector stores that occured before the trap, then the stores and loads from the trap handler, then the remaining vector stores.  It can be seen here that the order of the stores in the data trace stream does not match the order of store retirements in the instruction trace stream.
 
-In order to allow the decoder to resolve ordering issues such as this, and correlate the loads and stores with the correct instruction, loads or stores from multi-memory-access instructions are identified using dedicated *dtype* encodings.  On encountering these loads or stores in the data trace stream, the decoder must set these aside in a stack-like structure until a multi-access load or store instruction is encountered in the instruction trace stream.  It can then correlate the appropriate number of the most recent multi-memory-access loads or stores with the instruction.
+In order to allow the trace decoder to resolve ordering issues such as this, and correlate the loads and stores with the correct instruction, loads or stores from multi-memory-access instructions are identified using dedicated *dtype* encodings.  On encountering these loads or stores in the data trace stream, the trace decoder must set these aside in a stack-like structure until a multi-access load or store instruction is encountered in the instruction trace stream.  It can then correlate the appropriate number of the most recent multi-memory-access loads or stores with the instruction.
 
 Some multi-access instructions restart from the beginning following a trap, and this complicates the correlation process, but such repeat loads or stores can be identified from their addresses.  For example, a _cm.push_ instruction that performs 4 stores that faults after the 2nd store will result in a sequence of 6 stores at addresses A, A+1, A, A+1, A+2, A+3.  This will only happen when the multi-access load/store retires immediately after a *ret, and the number of repeated accesses can be determined from the addressing pattern.
+
+Special consideration is also needed if data trace is enabled and tracing starts on the cycle that an MMA instruction retires.  The start could be initiated by any cause (software, a _trace-on_ trigger, filter qualification, etc.)  When tracing starts, the instructions retired in that cycle along with any loads or stores reported in that cycle are included in the trace stream.  The final load or store in an MMA instruction may occur at the same time that the instruction retires, or may be earlier.  Enabling trace on the cycle that the MMA retires means there may be one or none of the loads or stores of that instruction included in the data trace stream, and this indeterminism presents difficulties for correlating the instruction and data trace streams during decoding.  To avoid this, if an MMA instruction is in progress (MMA loads or stores observed via *dretire* and *dtype* but instruction not retired), tracing must not be enabled until after the MMA retires.  The effect of this will be to delay the start of trace by one cycle.  But it ensures all retired MMA instructions in the instruction trace stream will be accompanied by a full set of loads/stores in the data trace stream.

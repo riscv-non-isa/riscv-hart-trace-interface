@@ -3,6 +3,8 @@
 
 The RISC-V Hart to Trace Encoder Interface (RHTI) was originally developed (and ratified) as part of the https://github.com/riscv-non-isa/riscv-trace-spec/releases/latest/[Efficient Trace for RISC-V (E-Trace) Specification].  However, the interface itself is not E-Trace specific, and is suitable for use with any instruction and data trace encoding protocol.  As such, this document makes it  available as a standalone specification.
 
+This specification also includes a normative change related to the handling of multi-memory access instructions - see <<sec:MMAInst>>.
+
 [[sec:terminology]]
 === Terminology
 
@@ -41,15 +43,18 @@ constant embedded within the jump opcode
 - *uninferable jump*: a jump which is not inferable (see above)
 * *LSB*: least significant bit
 * *MSB*: most significant bit
+* *Multi-memory access (MMA) instruction*: An instruction such as those introduced by the Zcmp and Vector extensions that results in multiple loads or stores
 * *packet*: the atomic unit of encoded trace information emitted by the
 encoder
 * *PC*: program counter
 * *program counter*: a register containing the address of the
 instruction being executed
 * *retire*: the final stage of executing an instruction, when the
-machine state is updated (sometimes referred to as ’commit’ or
+machine state is updated and the `minstret` CSR is updated (sometimes referred to as ’commit’ or
 ’graduate’)
 * *RHTI* RISC-V Hart to Trace Encoder Interface (this specification)
+* *trace decoder*: see *decoder*
+* *trace encoder*: seee *encoder*
 * *trap*: the transfer of control to a trap handler caused by either an
 exception or an interrupt
 
