@@ -3,13 +3,13 @@
 
 This chapter specifies the following standard extensions to the base Hart to Trace Interface.
 
-[%autowidth,float="center",align="center",cols="^,^,^",options="header",]
-|===
-|       Specification                                        |Version |Status
-| <<sec:trcstate, *Trace State*>>|*0.9* |*Fast-track*
+[WARNING]
+.This document is link:http://riscv.org/spec-state[Ratified].
+====
+No changes are allowed. Any desired or needed changes can be the subject of a
+follow-on new extension. Ratified extensions are never revised.
+====
 
-
-|===
 [[sec:trcstate]]
 === Trace State
 The *halted* signal defined in <<tab:ingress-side-band, Optional sideband encoder input signals>> provides a mechanism to inhibit tracing whilst the hart is in Debug mode.  However, since this was defined, other conditions that require similar behaviour have been identified:
