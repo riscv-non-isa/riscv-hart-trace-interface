@@ -13,5 +13,5 @@ asciidoc:
     page-card-description: 'RISC-V Hart Trace Interface specification for instruction trace encoder communication.'
     page-release-date: 'September 2026'
     page-pdf_url: _attachments/riscv-hart-trace-interface.pdf
-    more_details_url: https://riscv.atlassian.net/wiki/external/RVS-3561
+    more_details_url: https://riscv.atlassian.net/wiki/external/ZTYxZWJiYWI0MTcwNDIxZWE4ZGRjZWQyMWRiODM3ODk
     source-highlighter: highlight.js
